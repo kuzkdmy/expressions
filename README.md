@@ -1,0 +1,14 @@
+### Expression parsers
+
+#### General idea
+
+This is all about objects and their fields
+
+#### Domain
+
+- expression (single expr to evaluate or expr that combine multiple expr to evaluate via and/or condition)
+- expression rule (rule to evaluate on object level or on field level)
+- field level rules (simple are on exact field types. object rule is for nested objects(hierarchically supported)
+- predicate(depends on field type, usually something like equals/not equals/exists/between/...)
+
+All information comes from server and UI is able to create dynamic expressions
