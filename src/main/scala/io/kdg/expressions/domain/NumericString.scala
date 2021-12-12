@@ -1,7 +1,9 @@
 package io.kdg.expressions.domain
 
+import cats.Show
 import io.circe.syntax.EncoderOps
 import io.circe.{Decoder, Encoder}
+import sttp.tapir.Schema
 
 case class NumericString private (value: String)
 object NumericString {
@@ -20,4 +22,6 @@ object NumericString {
 
   implicit val encoder: Encoder[NumericString] = Encoder.encodeString.contramap[NumericString](_.toString)
   implicit val decoder: Decoder[NumericString] = Decoder.decodeString.emapTry(str => NumericString(str).toTry)
+  implicit val schema: Schema[NumericString]   = Schema.string
+  implicit val show: Show[NumericString]       = _.value
 }

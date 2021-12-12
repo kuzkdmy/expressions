@@ -3,9 +3,10 @@ package io.kdg.expressions.domain
 import io.kdg.expressions.domain.ExpRule.{FieldRule, ObjectRule}
 import io.kdg.expressions.domain.Expr.EvalExpr
 import io.kdg.expressions.domain.FieldPredicate.{DateField, NumericField, ObjectField, StringField}
-import zio.durationInt
+import zio.duration.durationInt
 import zio.test.Assertion.equalTo
-import zio.test.{DefaultRunnableSpec, TestAspect, TestEnvironment, ZSpec, assert}
+import zio.test.environment.TestEnvironment
+import zio.test.{DefaultRunnableSpec, TestAspect, ZSpec, assert}
 
 import java.time.{LocalDate, Month}
 import scala.util.control.NoStackTrace

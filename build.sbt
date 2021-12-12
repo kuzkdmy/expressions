@@ -1,20 +1,48 @@
-ThisBuild / scalaVersion := "2.13.7"
-ThisBuild / version := "0.1.0-SNAPSHOT"
+ThisBuild / scalaVersion := "2.13.6"
 ThisBuild / organization := "io.kdg.expressions"
 ThisBuild / organizationName := "kdg"
 
+Global / concurrentRestrictions += Tags.limit(Tags.Test, 1)
+ThisBuild / parallelExecution := false
+
 lazy val root = (project in file("."))
+  .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     name := "expressions",
+    addCompilerPlugin("org.typelevel" % "kind-projector"     % "0.13.0" cross CrossVersion.full),
+    addCompilerPlugin("com.olegpy"   %% "better-monadic-for" % "0.3.1"),
     libraryDependencies ++= Seq(
-      "com.beachape" %% "enumeratum-circe"     % "1.7.0",
-      "dev.zio"      %% "zio"                  % "2.0.0-M6-2",
-      "dev.zio"      %% "zio-test"             % "2.0.0-M6-2" % Test,
-      "io.circe"     %% "circe-generic-extras" % "0.14.1",
-      "io.circe"     %% "circe-parser"         % "0.14.1",
-      "io.estatico"  %% "newtype"              % "0.4.4",
-      "tf.tofu"      %% "derevo-circe"         % "0.12.8"
+      "ch.qos.logback"                 % "logback-classic"               % "1.3.0-alpha10",
+      "com.beachape"                  %% "enumeratum-circe"              % "1.7.0",
+      "com.github.pureconfig"         %% "pureconfig"                    % "0.17.1",
+      "com.softwaremill.sttp.client3" %% "async-http-client-backend-zio" % "3.3.17",
+      "com.softwaremill.sttp.tapir"   %% "tapir-core"                    % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-derevo"                  % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-enumeratum"              % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-json-circe"              % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-newtype"                 % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-openapi-circe-yaml"      % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-openapi-docs"            % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-prometheus-metrics"      % "0.19.0-M9",
+      "com.softwaremill.sttp.tapir"   %% "tapir-swagger-ui-zio-http"     % "0.19.0-M4",
+      "com.softwaremill.sttp.tapir"   %% "tapir-zio-http"                % "0.19.0-M9",
+      "dev.zio"                       %% "zio"                           % "1.0.12",
+      "dev.zio"                       %% "zio"                           % "1.0.12",
+      "dev.zio"                       %% "zio-interop-cats"              % "3.2.9.0",
+      "dev.zio"                       %% "zio-metrics-prometheus"        % "1.0.12",
+      "dev.zio"                       %% "zio-test"                      % "1.0.12" % "test",
+      "dev.zio"                       %% "zio-test"                      % "1.0.12" % "test",
+      "dev.zio"                       %% "zio-test-sbt"                  % "1.0.12" % "test",
+      "io.circe"                      %% "circe-generic-extras"          % "0.14.1",
+      "io.circe"                      %% "circe-generic-extras"          % "0.14.1",
+      "io.circe"                      %% "circe-parser"                  % "0.14.1",
+      "io.d11"                        %% "zhttp"                         % "1.0.0.0-RC17",
+      "net.logstash.logback"           % "logstash-logback-encoder"      % "7.0.1",
+      "tf.tofu"                       %% "derevo-cats"                   % "0.12.8",
+      "tf.tofu"                       %% "derevo-circe"                  % "0.12.8"
     ),
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
     scalacOptions ++= Seq(
       "-deprecation", // Emit warning and location for usages of deprecated APIs.

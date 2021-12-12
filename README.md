@@ -12,3 +12,9 @@ This is all about objects and their fields
 - predicate(depends on field type, usually something like equals/not equals/exists/between/...)
 
 All information comes from server and UI is able to create dynamic expressions
+
+#### Links
+[Swagger docs](http://localhost:8293/docs/index.html?url=/docs/docs.yaml)
+
+#### TODO
+- use tofu logging, they implement all as it really should be done with Fiber context
