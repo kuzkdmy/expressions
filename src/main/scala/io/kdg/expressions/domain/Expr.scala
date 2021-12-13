@@ -13,6 +13,7 @@ import scala.reflect.runtime.universe.typeOf
 
 @derive(show) sealed trait Expr { def `type`: String }
 object Expr {
+//  TODO rule should also support and/or combination
   @derive(show, encoder, decoder) case class CombineExpr(conjunction: Boolean, expressions: Seq[Expr]) extends Expr { val `type`: String = CombineExprType }
   @derive(show, encoder, decoder) case class EvalExpr(obj: String, rules: Seq[ExpRule])                extends Expr { val `type`: String = EvalExprType }
 
@@ -32,6 +33,9 @@ object Expr {
   implicit val _decoder: Decoder[Expr]            = deriveConfiguredDecoder
   implicit val _encoder: Encoder[Expr]            = deriveConfiguredEncoder
 }
+
+
+
 
 @derive(show) sealed trait ExpRule { def `type`: String }
 object ExpRule {

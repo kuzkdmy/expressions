@@ -13,6 +13,11 @@ This is all about objects and their fields
 
 All information comes from server and UI is able to create dynamic expressions
 
+#### How to create you own expressions
+Field and Object predicates should allow build almost any hierarchical complexity expressions </br>
+Setup of objects and their fields is required</br>
+Frontend UI component should query available objects and allowed fields predicates 
+
 #### Links
 [Swagger docs](http://localhost:8293/docs/index.html?url=/docs/docs.yaml)
 
