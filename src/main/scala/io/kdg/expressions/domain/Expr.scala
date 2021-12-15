@@ -13,12 +13,11 @@ import scala.reflect.runtime.universe.typeOf
 
 @derive(show) sealed trait Expr { def `type`: String }
 object Expr {
-//  TODO rule should also support and/or combination
   @derive(show, encoder, decoder) case class CombineExpr(conjunction: Boolean, expressions: Seq[Expr]) extends Expr { val `type`: String = CombineExprType }
-  @derive(show, encoder, decoder) case class EvalExpr(obj: String, rules: Seq[ExpRule])                extends Expr { val `type`: String = EvalExprType }
+  @derive(show, encoder, decoder) case class EvalExpr(obj: String, rule: ApiExprRule)                  extends Expr { val `type`: String = EvalExprType }
 
-  private lazy val CombineExprType: String = "combine"
-  private lazy val EvalExprType: String    = "eval"
+  private val CombineExprType: String = "combine"
+  private val EvalExprType: String    = "eval"
 
   implicit val genDevConfig: sttp.tapir.generic.Configuration = sttp.tapir.generic.Configuration.default.withDiscriminator("type")
   implicit lazy val sEntity: Schema[Expr] = Schema.oneOfUsingField[Expr, String](_.`type`, identity)(
@@ -34,8 +33,27 @@ object Expr {
   implicit val _encoder: Encoder[Expr]            = deriveConfiguredEncoder
 }
 
+@derive(show) sealed trait ApiExprRule { def `type`: String }
+object ApiExprRule {
+  @derive(show, encoder, decoder) case class ApiCombineExprRule(conjunction: Boolean, rules: Seq[ExpRule]) extends ApiExprRule { val `type`: String = CombineExprRuleType }
+  @derive(show, encoder, decoder) case class ApiEvalExprRule(rules: Seq[ExpRule])                          extends ApiExprRule { val `type`: String = EvalExprRuleType }
 
+  private val CombineExprRuleType: String = "combine"
+  private val EvalExprRuleType: String    = "eval"
 
+  implicit val genDevConfig: sttp.tapir.generic.Configuration = sttp.tapir.generic.Configuration.default.withDiscriminator("type")
+  implicit lazy val sEntity: Schema[ApiExprRule] = Schema.oneOfUsingField[ApiExprRule, String](_.`type`, identity)(
+    CombineExprRuleType -> Schema.derived[ApiCombineExprRule],
+    EvalExprRuleType    -> Schema.derived[ApiEvalExprRule]
+  )
+  private val circeDiscriminators = Map(
+    typeOf[ApiCombineExprRule].typeSymbol.name.toString -> CombineExprRuleType,
+    typeOf[ApiEvalExprRule].typeSymbol.name.toString    -> EvalExprRuleType
+  )
+  implicit val _circeConfiguration: Configuration = circeConfiguration(circeDiscriminators)
+  implicit val _decoder: Decoder[ApiExprRule]     = deriveConfiguredDecoder
+  implicit val _encoder: Encoder[ApiExprRule]     = deriveConfiguredEncoder
+}
 
 @derive(show) sealed trait ExpRule { def `type`: String }
 object ExpRule {
@@ -60,10 +78,10 @@ object ExpRule {
 
 @derive(show) sealed trait FieldPredicate { def `type`: String; def fieldName: String }
 object FieldPredicate {
-  @derive(show, encoder, decoder) case class ObjectField(fieldName: String, obj: String, expression: Expr) extends FieldPredicate { val `type`: String = ObjectFieldType }
-  @derive(show, encoder, decoder) case class StringField(fieldName: String, rule: StringPredicate)         extends FieldPredicate { val `type`: String = StringFieldType }
-  @derive(show, encoder, decoder) case class DateField(fieldName: String, rule: DatePredicate)             extends FieldPredicate { val `type`: String = DateFieldType }
-  @derive(show, encoder, decoder) case class NumericField(fieldName: String, rule: NumericPredicate)       extends FieldPredicate { val `type`: String = NumericFieldType }
+  @derive(show, encoder, decoder) case class ObjectField(fieldName: String, expression: Expr)        extends FieldPredicate { val `type`: String = ObjectFieldType }
+  @derive(show, encoder, decoder) case class StringField(fieldName: String, rule: StringPredicate)   extends FieldPredicate { val `type`: String = StringFieldType }
+  @derive(show, encoder, decoder) case class DateField(fieldName: String, rule: DatePredicate)       extends FieldPredicate { val `type`: String = DateFieldType }
+  @derive(show, encoder, decoder) case class NumericField(fieldName: String, rule: NumericPredicate) extends FieldPredicate { val `type`: String = NumericFieldType }
 
   private lazy val ObjectFieldType: String  = "obj"
   private lazy val StringFieldType: String  = "string"
